@@ -1,0 +1,23 @@
+Value from dropdown using for loop Select State
+Value from dropdown using for loop Andhra Pradesh
+Value from dropdown using for loop Arunachal Pradesh
+Value from dropdown using for loop Assam
+Value from dropdown using for loop Bihar
+Value from dropdown using for loop Chhattisgarh
+Value from dropdown using for loop Goa
+Value from dropdown using for loop Gujarat
+Value from dropdown using for loop Haryana
+Value from dropdown using for loop Himachal Pradesh
+Value from dropdown using for loop Jammu and Kashmir
+Value from dropdown using for loop Jharkhand
+Value from dropdown using for loop Karnataka
+Value from dropdown using for loop Kerala
+Value from dropdown using for loop Madhya Pradesh
+Value from dropdown using for loop Maharashtra
+Value from dropdown using for loop Manipur
+Value from dropdown using for loop Meghalaya
+Value from dropdown using for loop Mizoram
+Value from dropdown using for loop Nagaland
+Value from dropdown using for loop Odisha
+Value from dropdown using for loop Punjab
+Value from dropdown using for loop Rajasthan

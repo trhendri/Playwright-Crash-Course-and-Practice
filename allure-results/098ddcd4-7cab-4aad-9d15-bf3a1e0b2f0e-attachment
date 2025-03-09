@@ -1,0 +1,208 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Valid Login
+- Location: C:\Users\spasi\Projects\Automation Testing Site - Playwright - Project\tests\crashcourse.spec.js:66:5
+
+# Error details
+
+```
+Error: expect(locator).toHaveURL(expected)
+
+Locator: locator(':root')
+Expected pattern: /dashboard/
+Received string:  "chrome-error://chromewebdata/"
+Call log:
+  - expect.toHaveURL with timeout 5000ms
+  - waiting for locator(':root')
+    8 × locator resolved to <html>…</html>
+      - unexpected value "chrome-error://chromewebdata/"
+
+    at C:\Users\spasi\Projects\Automation Testing Site - Playwright - Project\tests\crashcourse.spec.js:75:24
+```
+
+# Test source
+
+```ts
+   1 | // @ts-check
+   2 | import { test, expect } from '@playwright/test';
+   3 | //const {test, expect} = require('@playwright/test');
+   4 | import { only } from 'node:test';
+   5 | const jsonTestData = JSON.parse(JSON.stringify(require('../testdata.json'))); //? Convert JS value to JSON String, 
+   6 |
+   7 | //Playwright with JavaScript
+   8 |
+   9 | test('My First Test', async ({ page }) => {
+   10 |     expect(12).toBe(12);
+   11 |
+   12 | });
+   13 |
+   14 | test('My Second Test', async ({ page }) => {
+   15 |     expect(100).toBe(101);
+   16 |
+   17 | });
+   18 |
+   19 | test('My Third Test', async ({ page }) => {
+   20 |     expect(2.0).toBe(2.0);
+   21 |
+   22 | });
+   23 | test('My Fourth Test', async ({ page }) => {
+   24 |     expect('Jimi Hendrix').toContain('Jimi');
+   25 |     expect(true).toBeTruthy();
+   26 |
+   27 | });
+   28 | //test.only, test.skip, test.describe
+   29 |
+   30 | test('My Fifth Test', async ({ page }) => {
+   31 |
+   32 |     expect(false).toBeFalsy();
+   33 |
+   34 | });
+   35 | test('My Sixth Test', async ({ page }) => {
+   36 |
+   37 |     expect('Jimi Hendrix'.includes('Jimi')).toBeTruthy();
+   38 |
+   39 | });
+   40 |
+   41 | //Google.spec.js
+   42 |
+   43 | test('Verify Application Title', async ({ page }) => {
+   44 |     await page.goto('https://google.com');
+   45 |     const url = await page.url();
+   46 |     console.log('Page URL is ' + url);
+   47 |     console.log('Page Title is ' + await page.title());
+   48 |     await expect(page).toHaveTitle('Google');
+   49 |
+   50 | });
+   51 |
+   52 | //? npx playwright test - test all 
+   53 | //? npx playright test ./tests/crashcourse.spec.js
+   54 | //? npx playwright show-report - show report
+   55 | //?  --headed - enable headed mode
+   56 |
+   57 | //Interacting with Web elements
+   58 | //? page.getByText(text[,options]) - to locate by text content
+   59 | //? page.getByRole(role[,options]) - to locate by Aria removeListener, Aria attributes, and accessible name
+   60 | //? page.getByLabel(text[,options]) - to located a form control by associated label's text
+   61 | //? page.getByTestId(testId) - to locate an element based on its data-testid attribute (other attribute can be configured)
+   62 | //? page.getByPlaceholder(text[,options]) - to located an input by placeholder
+   63 | //? page.getByAltText(text[,options]) - to locate an element, usually Image, by its text alternative
+   64 | //? page.getByTitle(text[,options]) - to locate an element by its title
+   65 |
+   66 | test('Valid Login', async ({ page }) => {
+   67 |     await page.goto('https:/opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+   68 |     const usernameField = await page.getByPlaceholder('Username');
+   69 |     const passwordField = await page.getByPlaceholder('Password');
+   70 |
+   71 |     await usernameField.fill('Admin'); //? delay each char for 200ms
+   72 |     await passwordField.fill('admin123');
+   73 |     await page.locator('// button[@type="submit"]').click(); // // button[@type="submit"]
+   74 |     //await page.waitForTimeout(5000);
+>  75 |     await expect(page).toHaveURL(/dashboard/);
+      |                        ^ Error: expect(locator).toHaveURL(expected)
+   76 |     const profileMenu = await page.getByAltText('profile picture').first();
+   77 |     const logoutButton = await page.getByText('Logout')
+   78 |     await profileMenu.click();
+   79 |     await logoutButton.click();
+   80 |     await page.waitForTimeout(3000);
+   81 |     await expect(page).toHaveURL(/login/);
+   82 |
+   83 | });
+   84 |
+   85 | //Verify Text
+   86 | test('Verify Error Message', async ({ page }) => {
+   87 |     await page.goto('https:/opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+   88 |     const usernameField = await page.getByPlaceholder('Username');
+   89 |     const passwordField = await page.getByPlaceholder('Password');
+   90 |
+   91 |     await usernameField.fill('Admin'); //? delay each char for 200ms
+   92 |     await passwordField.fill('admin1234');
+   93 |     await page.locator('// button[@type="submit"]').click();
+   94 |     const errorAlert = await page.getByText('Invalid credentials');
+   95 |     await expect(errorAlert).toBeVisible();
+   96 |     const alertText = await page.locator('//p[contains(@class, "alert-content-text")]').textContent();
+   97 |     console.log(alertText);
+   98 |     //expect(alertText.includes('Invalid')).toBeTruthy();
+   99 |     expect(alertText === "Invalid credentials").toBeTruthy();
+  100 | });
+  101 |
+  102 | //Maximize Browser Window In Playwright | Viewport in Playwright
+  103 |
+  104 | //?To change viewport in general/all tests
+  105 | //? go to config file
+  106 | //? under projects -> under 'use', add     viewport: {width:--, height:--}
+  107 |
+  108 | //? To change viewport for a specific test
+  109 | //? Run test.use outside/before test block - test.use({viewport: {width:1500, height: 1000}});
+  110 | //? await page.screenshot("path:'screenshot.png", fullPage: true});  -- to capture optional full page screenshot
+  111 | //? await page.locator('.header').screenshot({"path:'screenshot.png"}); == to capture element screenshot
+  112 |
+  113 | test.use({ viewport: { width: 1500, height: 1000 } });
+  114 | test('ViewPorts', async ({ page }) => {
+  115 |
+  116 |     await page.goto('https:/opensource-demo.orangehrmlive.com/web/index.php/auth/login');
+  117 |     console.log(await page.viewportSize()); // - returns viewport width and height
+  118 |     console.log(page.viewportSize().width)
+  119 |     console.log(page.viewportSize().height)
+  120 |
+  121 | });
+  122 |
+  123 | //Taking Screenshots | Videos in Playwright
+  124 |
+  125 | //? To capture screenshots/video/trace for all tests
+  126 | //? Go to Config file
+  127 | //? under projects -> under'use', add   screenshot:"on", video:"on", trace:"on"
+  128 |
+  129 | //Generating code automatically in Playwright | Record and play scripts in Playwright | Codegen 
+  130 | //? npx playwright codegen -launches codegen and recorder
+  131 | //? npx playwright codegen --help - launches helpful commands
+  132 | //? example:  npx playwright codegen https://website.com -o ./tests/codegen.spec.js - saves the code to a file a new file named codegen.spec.js
+  133 |
+  134 |
+  135 | //Retry Tests in Playwright
+  136 |
+  137 | //? Playwright can automatically retry failed test cases
+  138 | //? In config file:
+  139 | //? under "retries" add    retries:2,   - if retries aren't consistent then its a sign of flaky test
+  140 | //? or in cli, add --retries=3
+  141 |
+  142 |
+  143 | //?Handling Dropdowns in Playwright and Verify Dropdown Values
+  144 |
+  145 | test('Select Values from Dropdown', async ({ page }) => {
+  146 |     await page.goto('https://freelance-learn-automation.vercel.app/signup');
+  147 |     await page.locator('#state').selectOption('Goa');
+  148 |     await page.locator('#state').selectOption({ label: 'Goa' });
+  149 |     await page.locator('#state').selectOption({ value: 'Himachal Pradesh' });
+  150 |     await page.locator('#state').selectOption({ index: 4 });
+  151 |
+  152 |     //    const value = await page.locator('#state').textContent();  //returns all state  values
+  153 |     //    console.log("All dropdown values " + value);
+  154 |     //    await expect(value.includes('Kerala')).toBeTruthy();
+  155 |
+  156 |     //? Create loop to traverse through all states
+  157 |
+  158 |     let state = await page.$('#state');
+  159 |     let allElements = await state.$$("option"); //? Gets all states
+  160 |     let dropdownStatus = false;
+  161 |
+  162 |     for (let i = 0; i < allElements.length; i++) {
+  163 |         let element = allElements[i];
+  164 |         let value = await element.textContent();
+  165 |         console.log("Value from dropdown using for loop " + value);
+  166 |
+  167 |         if (value.includes('Rajasthan')) {
+  168 |             dropdownStatus = true;
+  169 |             break;
+  170 |         }
+  171 |
+  172 |     }
+  173 |     await expect(dropdownStatus).toBeTruthy();
+  174 |
+  175 |     // //?Alt for loop
+```

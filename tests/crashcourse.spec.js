@@ -2,6 +2,7 @@
 import { test, expect } from '@playwright/test';
 //const {test, expect} = require('@playwright/test');
 import { only } from 'node:test';
+const jsonTestData = JSON.parse(JSON.stringify(require('../testdata.json'))); //? Convert JS value to JSON String, 
 
 //Playwright with JavaScript
 
@@ -62,7 +63,7 @@ test('Verify Application Title', async ({ page }) => {
 //? page.getByAltText(text[,options]) - to locate an element, usually Image, by its text alternative
 //? page.getByTitle(text[,options]) - to locate an element by its title
 
-test.only('Valid Login', async ({ page }) => {
+test('Valid Login', async ({ page }) => {
     await page.goto('https:/opensource-demo.orangehrmlive.com/web/index.php/auth/login');
     const usernameField = await page.getByPlaceholder('Username');
     const passwordField = await page.getByPlaceholder('Password');
@@ -318,80 +319,105 @@ test('Working with Multiple Tabs', async ({ browser }) => { //?Note browser here
 });
 
 //Handling Dynamic Network Call in Playwright
-
-
-
-
-
-
-//Practice Scenarios
-test.describe('Test Scenarios', async () => {
-
-    //https://www.youtube.com/watch?v=K5b0LwYNnlw
-    test('Scenario 1', async({page}) => {
-       await page.goto('https://freelance-learn-automation.vercel.app');
-       //Verify title contains 'Courses'
-       // Verify courses are greater than 0
-       //Verify footer icons are greater than 0
-
-    });
-    test('Scenario 2', async({page}) => {
-        await page.goto('https://freelance-learn-automation.vercel.app');
-        //Click navigation
-        // go to login
-        //verify user is landed on correct page
-        //enter credentials
-        //click login 
-        //verify welcome message at top - welcome + keyword
-        //click nav then sign out
-        //verify sign in title or sign in button
- 
-    });
-
-    test('Scenario 3', async({page}) => {
-        await page.goto('https://freelance-learn-automation.vercel.app/login');
-        //verify "New user?" link is clickable/enabled
-        //click new user? link
-        // create new user fill form, select multiple hobbies
-        //Click sign up
-        //verify "Signup successfully" message at top right
-
-    });
-
-    test('Scenario 4 - End 2 End', async({page}) => {
-        await page.goto('https://freelance-learn-automation.vercel.app');
-        //Login to application
-        //hover over "Manage" --> click "Manage courses"
-        //Click "Add new course"
-        //Create a new course, upload file etc, calendar controls - select next date and course ends 2 months later, drop downs etc
-        //Verify checkbox is unchecked
-        //Verify is any file more than 1mb is uploaded, an alert displays
-        //Accept alert
-        //Choose different file
-        //Save
-        //Verify the course created is displayed - course name
-        //Click delete
-        //Verify course has been deleted from table
-        //Select navigation and sign out
-
-    });
-
-    test('Scenario 5', async({page}) => {
-        //Sign in
-        //Click manage categories
-        //Switch to the new tab
-        //Click add new category
-        //Enter name in prompt
-        //Verify new category is added to table
-        //Click update, wait for 5 seconds, update prompt input
-        //Verify update
-        //Click delete, click delete in alert
-        //Confirm deletion
-        //Sign out
-
-
-    });
-
+test('Working With Load State', async({page}) => {
+await page.goto('https://freelance-learn-automation.vercel.app/login');
+await page.getByText('New user? Signup').click(); // page.getByText('New user Signup");
+//Verify number of checkboxes
+await page.waitForLoadState('networkidle'); //?Helps when the network take a little while for load issue
+const checkboxCount = await page.locator('//input[@type="checkbox"]').count();
+console.log(checkboxCount);
+await expect(checkboxCount).toBe(3);
 
 
 });
+
+//Read Data from JSON  file in Playwright
+//? Refer to json
+test('Login To Application', async({page}) => {
+    await page.goto('https://freelance-learn-automation.vercel.app/login');
+    const usernameField = await page.getByPlaceholder('Enter Email').fill(jsonTestData.username);
+    const passwordField = await page.getByPlaceholder('Enter Password').fill(jsonTestData.password);
+
+
+});
+//! Revist data driven test section https://youtu.be/pq20Gd4LXeI?list=PLzI7JjnoSwrbsmxwN1I93lsKVbh-Y-gAL&t=23323
+
+
+//Generate Allure Reports in PLaywright Automatically with Screenshot
+//? install allure playwright package
+//? npm i -D @playwright/test allure-playwright
+//? npx playwright test --reporter=allure-playwright -- run reporter
+//? allure generate allure-results -o allure-report --clean  - Generate allure report
+
+
+// //Practice Scenarios
+// test.describe('Test Scenarios', async () => {
+
+//     //https://www.youtube.com/watch?v=K5b0LwYNnlw
+//     test('Scenario 1', async({page}) => {
+//        await page.goto('https://freelance-learn-automation.vercel.app');
+//        //Verify title contains 'Courses'
+//        // Verify courses are greater than 0
+//        //Verify footer icons are greater than 0
+
+//     });
+//     test('Scenario 2', async({page}) => {
+//         await page.goto('https://freelance-learn-automation.vercel.app');
+//         //Click navigation
+//         // go to login
+//         //verify user is landed on correct page
+//         //enter credentials
+//         //click login 
+//         //verify welcome message at top - welcome + keyword
+//         //click nav then sign out
+//         //verify sign in title or sign in button
+ 
+//     });
+
+//     test('Scenario 3', async({page}) => {
+//         await page.goto('https://freelance-learn-automation.vercel.app/login');
+//         //verify "New user?" link is clickable/enabled
+//         //click new user? link
+//         // create new user fill form, select multiple hobbies
+//         //Click sign up
+//         //verify "Signup successfully" message at top right
+
+//     });
+
+//     test('Scenario 4 - End 2 End', async({page}) => {
+//         await page.goto('https://freelance-learn-automation.vercel.app');
+//         //Login to application
+//         //hover over "Manage" --> click "Manage courses"
+//         //Click "Add new course"
+//         //Create a new course, upload file etc, calendar controls - select next date and course ends 2 months later, drop downs etc
+//         //Verify checkbox is unchecked
+//         //Verify is any file more than 1mb is uploaded, an alert displays
+//         //Accept alert
+//         //Choose different file
+//         //Save
+//         //Verify the course created is displayed - course name
+//         //Click delete
+//         //Verify course has been deleted from table
+//         //Select navigation and sign out
+
+//     });
+
+//     test('Scenario 5', async({page}) => {
+//         //Sign in
+//         //Click manage categories
+//         //Switch to the new tab
+//         //Click add new category
+//         //Enter name in prompt
+//         //Verify new category is added to table
+//         //Click update, wait for 5 seconds, update prompt input
+//         //Verify update
+//         //Click delete, click delete in alert
+//         //Confirm deletion
+//         //Sign out
+
+
+//     });
+
+
+
+// });

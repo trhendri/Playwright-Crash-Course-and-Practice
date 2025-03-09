@@ -1,0 +1,15 @@
+[{
+    "name": "Jimi Hendrix",
+    "username": "Jimi@gmail.com",
+    "email": "jimi@email.com",
+    "password": "1234",
+    "interests": ["PWS", "AWS"],
+    "gender": "Male",
+    "address": {
+        "state": "New York",
+        "city": "Assam",
+        "postcode": "556699"
+    },
+    "hobbies": ["Playing", "Swimming"]
+}
+]

@@ -1,0 +1,192 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: Test Scenarios >> Scenario 1
+- Location: C:\Users\spasi\Projects\Automation Testing Site - Playwright - Project\tests\crashcourse.spec.js:357:9
+
+# Error details
+
+```
+Error: page.goto: net::ERR_TIMED_OUT at https://freelance-learn-automation.vercel.app/
+Call log:
+  - navigating to "https://freelance-learn-automation.vercel.app/", waiting until "load"
+
+    at C:\Users\spasi\Projects\Automation Testing Site - Playwright - Project\tests\crashcourse.spec.js:358:19
+```
+
+# Test source
+
+```ts
+  258 |         await page.getByText('Click for JS Alert').click();
+  259 |
+  260 |         await expect(await page.locator('#result')).toHaveText('You successfully clicked an alert');
+  261 |
+  262 |     });
+  263 |
+  264 |     test('Capturing Confirm', async ({ page }) => {
+  265 |         await page.goto('https://the-internet.herokuapp.com/javascript_alerts');
+  266 |
+  267 |         page.on('dialog', async (dialogWindow) => {
+  268 |             expect(dialogWindow.type()).toContain("confirm");
+  269 |             expect(dialogWindow.message()).toContain("I am a JS Confirm")
+  270 |             await dialogWindow.accept();
+  271 |             //await dialogWindow.dismiss();
+  272 |
+  273 |         });
+  274 |         await page.getByText('Click for JS Confirm').click();
+  275 |         await expect(await page.locator('#result')).toHaveText('You clicked: Ok')
+  276 |     });
+  277 |
+  278 |     test('Capturing Prompt', async ({ page }) => {
+  279 |         await page.goto('https://the-internet.herokuapp.com/javascript_alerts');
+  280 |
+  281 |         page.on('dialog', async (dialogWindow) => {
+  282 |             expect(dialogWindow.type()).toContain("prompt");
+  283 |             expect(dialogWindow.message()).toContain("I am a JS prompt")
+  284 |             await dialogWindow.accept('Jimi Hendrix');
+  285 |             //await dialogWindow.dismiss();
+  286 |
+  287 |         });
+  288 |         await page.getByText('Click for JS Prompt').click();
+  289 |         await expect(await page.locator('#result')).toHaveText('You entered: Jimi Hendrix')
+  290 |     });
+  291 | });
+  292 |
+  293 | //Handling Frames and iFrames in Playwright
+  294 |
+  295 | test('Handle Frames', async ({ page }) => {
+  296 |     await page.goto('https://docs.oracle.com/javase/8/docs/api/');
+  297 |     const iFrame = await page.frameLocator('frame[name="packageListFrame"]'); //? frameLocator does not accept xpath
+  298 |     await iFrame.locator('//a[text()="java.applet"]').click();
+  299 |
+  300 | });
+  301 |
+  302 | //! ReReview this concept.
+  303 | test('Working with Multiple Tabs', async ({ browser }) => { //?Note browser here
+  304 |     const context = await browser.newContext();
+  305 |     const page = await context.newPage(); //?New tab/window
+  306 |     await page.goto('https://freelance-learn-automation.vercel.app/login');
+  307 |     const [newPage] = await Promise.all([
+  308 |         context.waitForEvent("page"),
+  309 |         page.locator('//a[contains(@href, "facebook")]').first().click()
+  310 |     ]);
+  311 |     //? Work on new page
+  312 |
+  313 |     await newPage.locator('//input[@name="email"]').nth(1).fill("Jimi@hendrx.com");
+  314 |
+  315 |     //?Go back to main tab
+  316 |     await newPage.close();
+  317 |
+  318 |     await page.locator('#email1').fill('admin@email.com');
+  319 | });
+  320 |
+  321 | //Handling Dynamic Network Call in Playwright
+  322 | test('Working With Load State', async({page}) => {
+  323 | await page.goto('https://freelance-learn-automation.vercel.app/login');
+  324 | await page.getByText('New user? Signup').click(); // page.getByText('New user Signup");
+  325 | //Verify number of checkboxes
+  326 | await page.waitForLoadState('networkidle'); //?Helps when the network take a little while for load issue
+  327 | const checkboxCount = await page.locator('//input[@type="checkbox"]').count();
+  328 | console.log(checkboxCount);
+  329 | await expect(checkboxCount).toBe(3);
+  330 |
+  331 |
+  332 | });
+  333 |
+  334 | //Read Data from JSON  file in Playwright
+  335 | //? Refer to json
+  336 | test('Login To Application', async({page}) => {
+  337 |     await page.goto('https://freelance-learn-automation.vercel.app/login');
+  338 |     const usernameField = await page.getByPlaceholder('Enter Email').fill(jsonTestData.username);
+  339 |     const passwordField = await page.getByPlaceholder('Enter Password').fill(jsonTestData.password);
+  340 |
+  341 |
+  342 | });
+  343 | //! Revist data driven test section https://youtu.be/pq20Gd4LXeI?list=PLzI7JjnoSwrbsmxwN1I93lsKVbh-Y-gAL&t=23323
+  344 |
+  345 |
+  346 | //Generate Allure Reports in PLaywright Automatically with Screenshot
+  347 | //? install allure playwright package
+  348 | //? npm i -D @playwright/test allure-playwright
+  349 | //? npx playwright test --reporter=allure-playwright
+  350 | //? allure generate allure-results -o allure-report --clean  - Generate allure report
+  351 |
+  352 |
+  353 | //Practice Scenarios
+  354 | test.describe('Test Scenarios', async () => {
+  355 |
+  356 |     //https://www.youtube.com/watch?v=K5b0LwYNnlw
+  357 |     test('Scenario 1', async({page}) => {
+> 358 |        await page.goto('https://freelance-learn-automation.vercel.app');
+      |                   ^ Error: page.goto: net::ERR_TIMED_OUT at https://freelance-learn-automation.vercel.app/
+  359 |        //Verify title contains 'Courses'
+  360 |        // Verify courses are greater than 0
+  361 |        //Verify footer icons are greater than 0
+  362 |
+  363 |     });
+  364 |     test('Scenario 2', async({page}) => {
+  365 |         await page.goto('https://freelance-learn-automation.vercel.app');
+  366 |         //Click navigation
+  367 |         // go to login
+  368 |         //verify user is landed on correct page
+  369 |         //enter credentials
+  370 |         //click login 
+  371 |         //verify welcome message at top - welcome + keyword
+  372 |         //click nav then sign out
+  373 |         //verify sign in title or sign in button
+  374 |  
+  375 |     });
+  376 |
+  377 |     test('Scenario 3', async({page}) => {
+  378 |         await page.goto('https://freelance-learn-automation.vercel.app/login');
+  379 |         //verify "New user?" link is clickable/enabled
+  380 |         //click new user? link
+  381 |         // create new user fill form, select multiple hobbies
+  382 |         //Click sign up
+  383 |         //verify "Signup successfully" message at top right
+  384 |
+  385 |     });
+  386 |
+  387 |     test('Scenario 4 - End 2 End', async({page}) => {
+  388 |         await page.goto('https://freelance-learn-automation.vercel.app');
+  389 |         //Login to application
+  390 |         //hover over "Manage" --> click "Manage courses"
+  391 |         //Click "Add new course"
+  392 |         //Create a new course, upload file etc, calendar controls - select next date and course ends 2 months later, drop downs etc
+  393 |         //Verify checkbox is unchecked
+  394 |         //Verify is any file more than 1mb is uploaded, an alert displays
+  395 |         //Accept alert
+  396 |         //Choose different file
+  397 |         //Save
+  398 |         //Verify the course created is displayed - course name
+  399 |         //Click delete
+  400 |         //Verify course has been deleted from table
+  401 |         //Select navigation and sign out
+  402 |
+  403 |     });
+  404 |
+  405 |     test('Scenario 5', async({page}) => {
+  406 |         //Sign in
+  407 |         //Click manage categories
+  408 |         //Switch to the new tab
+  409 |         //Click add new category
+  410 |         //Enter name in prompt
+  411 |         //Verify new category is added to table
+  412 |         //Click update, wait for 5 seconds, update prompt input
+  413 |         //Verify update
+  414 |         //Click delete, click delete in alert
+  415 |         //Confirm deletion
+  416 |         //Sign out
+  417 |
+  418 |
+  419 |     });
+  420 |
+  421 |
+  422 |
+  423 | });
+```
