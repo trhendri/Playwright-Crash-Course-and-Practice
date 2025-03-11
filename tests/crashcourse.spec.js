@@ -319,21 +319,21 @@ test('Working with Multiple Tabs', async ({ browser }) => { //?Note browser here
 });
 
 //Handling Dynamic Network Call in Playwright
-test('Working With Load State', async({page}) => {
-await page.goto('https://freelance-learn-automation.vercel.app/login');
-await page.getByText('New user? Signup').click(); // page.getByText('New user Signup");
-//Verify number of checkboxes
-await page.waitForLoadState('networkidle'); //?Helps when the network take a little while for load issue
-const checkboxCount = await page.locator('//input[@type="checkbox"]').count();
-console.log(checkboxCount);
-await expect(checkboxCount).toBe(3);
+test('Working With Load State', async ({ page }) => {
+    await page.goto('https://freelance-learn-automation.vercel.app/login');
+    await page.getByText('New user? Signup').click(); // page.getByText('New user Signup");
+    //Verify number of checkboxes
+    await page.waitForLoadState('networkidle'); //?Helps when the network take a little while for load issue
+    const checkboxCount = await page.locator('//input[@type="checkbox"]').count();
+    console.log(checkboxCount);
+    await expect(checkboxCount).toBe(3);
 
 
 });
 
 //Read Data from JSON  file in Playwright
 //? Refer to json
-test('Login To Application', async({page}) => {
+test('Login To Application', async ({ page }) => {
     await page.goto('https://freelance-learn-automation.vercel.app/login');
     const usernameField = await page.getByPlaceholder('Enter Email').fill(jsonTestData.username);
     const passwordField = await page.getByPlaceholder('Enter Password').fill(jsonTestData.password);
@@ -350,74 +350,121 @@ test('Login To Application', async({page}) => {
 //? allure generate allure-results -o allure-report --clean  - Generate allure report
 
 
-// //Practice Scenarios
-// test.describe('Test Scenarios', async () => {
+//Practice Scenarios
+test.describe('Test Scenarios', async () => {
 
-//     //https://www.youtube.com/watch?v=K5b0LwYNnlw
-//     test('Scenario 1', async({page}) => {
-//        await page.goto('https://freelance-learn-automation.vercel.app');
-//        //Verify title contains 'Courses'
-//        // Verify courses are greater than 0
-//        //Verify footer icons are greater than 0
+    //https://www.youtube.com/watch?v=K5b0LwYNnlw
+    test('Scenario 1', async ({ page }) => {
+        await page.goto('https://freelance-learn-automation.vercel.app');
+        //Verify title contains 'Courses'
+        await expect(page).toHaveTitle("Learn Automation Courses");
+        // Verify courses are greater than 0
+        await page.waitForSelector('.course-card'); //? May need to use this more often than not
+        const coursesCount = await page.locator('.course-card').count();
+        console.log(coursesCount);
+        expect(coursesCount).toBeGreaterThan(0);
 
-//     });
-//     test('Scenario 2', async({page}) => {
-//         await page.goto('https://freelance-learn-automation.vercel.app');
-//         //Click navigation
-//         // go to login
-//         //verify user is landed on correct page
-//         //enter credentials
-//         //click login 
-//         //verify welcome message at top - welcome + keyword
-//         //click nav then sign out
-//         //verify sign in title or sign in button
- 
-//     });
+        //Verify footer icons are greater than 0
+        const socialButtonsCount = await page.locator('.social-btns a').count();
+        console.log(socialButtonsCount);
+        await expect(socialButtonsCount).toBeGreaterThan(0);
 
-//     test('Scenario 3', async({page}) => {
-//         await page.goto('https://freelance-learn-automation.vercel.app/login');
-//         //verify "New user?" link is clickable/enabled
-//         //click new user? link
-//         // create new user fill form, select multiple hobbies
-//         //Click sign up
-//         //verify "Signup successfully" message at top right
-
-//     });
-
-//     test('Scenario 4 - End 2 End', async({page}) => {
-//         await page.goto('https://freelance-learn-automation.vercel.app');
-//         //Login to application
-//         //hover over "Manage" --> click "Manage courses"
-//         //Click "Add new course"
-//         //Create a new course, upload file etc, calendar controls - select next date and course ends 2 months later, drop downs etc
-//         //Verify checkbox is unchecked
-//         //Verify is any file more than 1mb is uploaded, an alert displays
-//         //Accept alert
-//         //Choose different file
-//         //Save
-//         //Verify the course created is displayed - course name
-//         //Click delete
-//         //Verify course has been deleted from table
-//         //Select navigation and sign out
-
-//     });
-
-//     test('Scenario 5', async({page}) => {
-//         //Sign in
-//         //Click manage categories
-//         //Switch to the new tab
-//         //Click add new category
-//         //Enter name in prompt
-//         //Verify new category is added to table
-//         //Click update, wait for 5 seconds, update prompt input
-//         //Verify update
-//         //Click delete, click delete in alert
-//         //Confirm deletion
-//         //Sign out
-
-
-//     });
+    });
+    test('Scenario 2', async ({ page }) => {
+        await page.goto('https://freelance-learn-automation.vercel.app');
+        //Click navigation
+        const nav = await page.getByAltText('menu');
+        await nav.click();
 
 
 
-// });
+        // go to login
+        await page.getByText('Log in').click();
+
+        //verify user is landed on correct page
+        await expect(page).toHaveURL(/login/);
+        //enter credentials
+        await page.getByPlaceholder('Enter Email').fill('admin@email.com');
+        await page.getByPlaceholder('Enter Password').fill('admin@123');
+
+        //click login 
+        await page.locator('.submit-btn').click();
+        //verify welcome message at top - welcome + keyword
+        await page.waitForTimeout(3000);
+        const pageText = await page.locator('body').textContent();
+        // expect(pageText).toContain(/Welcome/);
+
+        //click nav then sign out
+        await nav.click();
+        await page.getByText('Sign out').click();
+        //verify sign in title or sign in button
+        const form = await page.locator('.login-form').textContent();
+        console.log(form);
+        await expect (page.locator('.login-form')).toHaveText(/Sign In/);
+
+    });
+
+        test('Scenario 3', async({page}) => {
+            await page.goto('https://freelance-learn-automation.vercel.app/login');
+            //verify "New user?" link is clickable/enabled
+            
+            await expect(page.locator('.subLink')).toBeEnabled();
+            //click new user? link
+            await page.getByText('New user? Signup').click();
+            // create new user fill form, select multiple hobbies
+            await page.waitForLoadState('networkidle');
+            await page.getByPlaceholder('Name').fill('Jimi');
+            await page.getByPlaceholder('Email').fill('jimi@email.com');
+            await page.getByPlaceholder('Password').fill('JimiPass');
+            await page.getByText('PWS').check(); //? Checkbox
+            await page.locator('#gender1').check(); //? RadioButton
+            await page.locator('#state').selectOption('Assam');
+            await page.locator('#hobbies').selectOption(['Playing', 'Swimming']);
+            await page.locator('.submit-btn').click();
+
+
+
+
+            //Click sign up
+            //verify "Signup successfully" message at top right
+            await expect(page.locator(body)).toHaveText(/Successfully/);
+
+        });
+
+    //     test('Scenario 4 - End 2 End', async({page}) => {
+    //         await page.goto('https://freelance-learn-automation.vercel.app');
+    //         //Login to application
+    //         //hover over "Manage" --> click "Manage courses"
+    //         //Click "Add new course"
+    //         //Create a new course, upload file etc, calendar controls - select next date and course ends 2 months later, drop downs etc
+    //         //Verify checkbox is unchecked
+    //         //Verify is any file more than 1mb is uploaded, an alert displays
+    //         //Accept alert
+    //         //Choose different file
+    //         //Save
+    //         //Verify the course created is displayed - course name
+    //         //Click delete
+    //         //Verify course has been deleted from table
+    //         //Select navigation and sign out
+
+    //     });
+
+    //     test('Scenario 5', async({page}) => {
+    //         //Sign in
+    //         //Click manage categories
+    //         //Switch to the new tab
+    //         //Click add new category
+    //         //Enter name in prompt
+    //         //Verify new category is added to table
+    //         //Click update, wait for 5 seconds, update prompt input
+    //         //Verify update
+    //         //Click delete, click delete in alert
+    //         //Confirm deletion
+    //         //Sign out
+
+
+    //     });
+
+
+
+});
