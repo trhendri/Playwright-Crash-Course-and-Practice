@@ -20,8 +20,23 @@
 		"scope": "javascript,typescript",
 		"prefix":"test",
 		"body": [
-			"test('$2', async({page}) => {$0});"
+			"test('$2', async({page}) => {",
+			"$1" ,"$0",
+			"});"
 		],
 		"description": "Creates test block"
+	},
+
+	"Test Describe Block": {
+		"prefix": "describe",
+		"body": [
+			"test.describe('$2', async () => {",
+				"test('', async({page}) => {",
+				"$1" ,"$0",
+				"});", 
+			"});"
+		],
+		"description": "Creates test.describe block"
+
 	}
 }
