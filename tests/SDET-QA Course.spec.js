@@ -457,3 +457,87 @@ test.describe('Dialogs, Alerts, Confirm', async () => {
 
     });
 });
+
+test.describe('Handling Date Pickers', async () => {
+    test('Date Picker - date selection using loop', async ({ page }) => {
+        await page.goto('https://testautomationpractice.blogspot.com/');
+        await page.locator('#datepicker').fill('03/17/2025');
+
+        //date picker
+
+        const year = '2022';
+        const month = 'May';
+        const day = "22";
+
+        await page.locator('#datepicker').click();
+
+        while (true) {
+            const currentYear = await page.locator('.ui-datepicker-year').textContent();
+            const currentMonth = await page.locator('.ui-datepicker-month').textContent();
+
+            if (currentYear == year && currentMonth == month) {
+                break;
+
+            }
+           // await page.getByTitle('Next').click(); //Next button
+           await page.getByTitle('Prev').click(); // Previous button
+
+        }
+        const days = await page.$$('.ui-state-default');
+
+        //date selection using loop
+        for (const dt of days) {
+            if (await dt.textContent() == day) {
+                await dt.click();
+                break;
+            }
+        }
+
+    });
+
+    test('date selection without loop', async({page}) => {
+        await page.goto('https://testautomationpractice.blogspot.com/');
+        await page.locator('#datepicker').fill('03/17/2025');
+
+        //date picker
+
+        const year = '2025';
+        const month = 'June';
+        const day = "2";
+
+        await page.locator('#datepicker').click();
+
+        while (true) {
+            const currentYear = await page.locator('.ui-datepicker-year').textContent();
+            const currentMonth = await page.locator('.ui-datepicker-month').textContent();
+
+            if (currentYear == year && currentMonth == month) {
+                break;
+
+            }
+            await page.getByTitle('Next').click(); //Next button
+
+        }
+        
+
+        //date selection without loop
+        await page.locator(`//a[@class="ui-state-default"][text()="${day}"]`).click(); //${day} pull from earlier declared variable
+
+    
+    });
+
+
+
+
+});
+
+test('Mouse Hover', async({page}) => {
+    await page.goto('https://testautomationpractice.blogspot.com/');
+    await page.getByText('Point Me').hover();
+    await page.getByText('Laptops').first().click();
+
+
+
+
+
+});
